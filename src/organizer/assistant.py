@@ -66,7 +66,15 @@ class Subdir(object):
         return ""
 
 class Assistant(object):
-    """The Assistant assists the user in organizing files and directories."""
+    """The Assistant assists the user in organizing files and directories.
+
+    The way it works is that, for a given organizee, the Assistant will attempt
+    to make educated guesses as to where the path should go, with the
+    help of the memory object, the detected nature of the path, and the
+    selected destination's contents.  The user can override some of these
+    guesses, like the base destination path and the subdirectories used
+    to store the organizee.
+    """
 
     memory = None
     path = None
@@ -75,16 +83,26 @@ class Assistant(object):
     subdirs = None
 
     def __init__(self, memory, path):
+        """Every Assistant requires a memory.Memory object, and a path pointing to
+        a file or directory to organize."""
         self.memory = memory
         self._path = path
         self.nature = natures.detect_nature(self._path)
         self.subdirs = []
 
     def begin(self):
+        """This method makes the initial educated guesses as to where to
+        organize the organizee, including detecting the nature of the organizee
+        and guessing the initial destination and subdirs."""
         initial_dest = self.memory.recall_destination_for_nature(self.nature.__class__)
         self.change_destination(initial_dest)
 
     def change_destination(self, new_destination):
+        """Sets a new destination for the organizee.
+
+        This will implicitly make the memory remember the association between
+        the nature of the organizee and the destination, after
+        persist_in_memory has been called."""
         if new_destination is not None:
             new_destination = destinations.Destination(new_destination)
         self.destination = new_destination
@@ -112,6 +130,11 @@ class Assistant(object):
         self.subdirs = subdirs
 
     def change_subdir(self, subdir_number, new_subdir):
+        """Changes a particular subdirectory to correspond to the specified string.
+
+        This will implicitly make the memory remember the substitution between
+        the guesses that this program made, and the specified subdir, after
+        persist_in_memory has been called."""
         subdirs = self.subdirs[:]
         while len(subdirs) < subdir_number:
             subdirs.append(Subdir(self.memory))
@@ -120,6 +143,8 @@ class Assistant(object):
         self._recompute_subdirs()
 
     def persist_in_memory(self):
+        """Requests the assistant to save its gathered knowledge into
+        its memory."""
         self.memory.remember_destination_for_nature(self.nature.__class__,
                                                     self.destination.path)
         for s in self.subdirs:
