@@ -88,9 +88,9 @@ class Assistant(object):
         if new_destination is not None:
             new_destination = destinations.Destination(new_destination)
         self.destination = new_destination
-        self.recompute_subdirs()
+        self._recompute_subdirs()
 
-    def recompute_subdirs(self):
+    def _recompute_subdirs(self):
         subdirs = self.subdirs[:]
         p = None
         naturehints = self.nature.subdir_hints()
@@ -117,7 +117,7 @@ class Assistant(object):
             subdirs.append(Subdir(self.memory))
         subdirs[subdir_number].set_user_supplied_datum(new_subdir)
         self.subdirs = subdirs
-        self.recompute_subdirs()
+        self._recompute_subdirs()
 
     def persist_in_memory(self):
         self.memory.remember_destination_for_nature(self.nature.__class__,
