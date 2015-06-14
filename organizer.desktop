@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Organize media files
+Exec=organizer %U
+Icon=application-x-executable
+Terminal=false
+TryExec=organizer
+Type=Application
+MimeType=audio/*;video/*;
+Categories=AudioVideo;FileTools;FileManager;
+X-AppInstall-Keywords=media
