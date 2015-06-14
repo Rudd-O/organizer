@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-'''Natures detector tests.'''
+'''Test utilities.'''
 
 import decorator
 import errno
