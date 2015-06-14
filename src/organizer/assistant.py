@@ -155,7 +155,18 @@ class Assistant(object):
 
     @property
     def final_path(self):
+        """This is the final full path name for the organizee."""
         if not self.destination:
             return None
         p = [self.destination.path] + [ str(s) for s in self.subdirs ] + [os.path.basename(self._path)]
         return os.path.join(*p)
+
+    @property
+    def container_of_final_path(self):
+        """This is the container for the final full path name of the organizee."""
+        return os.path.dirname(self.final_path) if self.final_path else None
+
+    @property
+    def container_of_final_path_exists(self):
+        """This returns False if the container for the final path does not exist."""
+        return self.container_of_final_path and os.path.isdir(self.container_of_final_path)
