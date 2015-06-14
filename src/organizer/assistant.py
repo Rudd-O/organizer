@@ -87,13 +87,13 @@ class Assistant(object):
         a file or directory to organize."""
         self.memory = memory
         self._path = path
-        self.nature = natures.detect_nature(self._path)
         self.subdirs = []
 
     def begin(self):
         """This method makes the initial educated guesses as to where to
         organize the organizee, including detecting the nature of the organizee
         and guessing the initial destination and subdirs."""
+        self.nature = natures.detect_nature(self._path)
         initial_dest = self.memory.recall_destination_for_nature(self.nature.__class__)
         self.change_destination(initial_dest)
 
@@ -111,7 +111,10 @@ class Assistant(object):
     def _recompute_subdirs(self):
         subdirs = self.subdirs[:]
         p = None
-        naturehints = self.nature.subdir_hints()
+        if self.nature:
+            naturehints = self.nature.subdir_hints()
+        else:
+            naturehints = []
         r = max((len(subdirs), len(naturehints)))
         for n in range(r):
             if n + 1 > len(subdirs):
