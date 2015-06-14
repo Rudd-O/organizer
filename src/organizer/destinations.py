@@ -27,10 +27,10 @@ class Destination(object):
     def guess_best_hint(self, hint, subpath=None):
         """Returns best possible subfolder based on a string hint.  May return
         None for no good hint.  Note that this does not return a full path."""
-        contents = self._get_hints(subpath=subpath)
+        contents = [ (x.lower(), x) for x in self._get_hints(subpath=subpath) ]
         junk = lambda x: x in ". -_"
         distances = [
-            (difflib.SequenceMatcher(junk, c.lower(), hint.lower()).ratio(), c)
+            (difflib.SequenceMatcher(junk, c[0], hint.lower()).ratio(), c[1])
              for c in contents
         ]
         distances = list(sorted(distances))

@@ -16,16 +16,19 @@ def dirtest():
     finally:
         shutil.rmtree(tempd)
 
+def createpaths(d, paths):
+    for p in paths:
+        dname = os.path.dirname(p)
+        if dname:
+            try:
+                os.makedirs(os.path.join(d, dname))
+            except OSError, e:
+                if e.errno != errno.EEXIST:
+                    raise
+        file(os.path.join(d, p), "wb").write("")
+
 @decorator.contextmanager
 def dirtree(paths):
     with dirtest() as d:
-        for p in paths:
-            dname = os.path.dirname(p)
-            if dname:
-                try:
-                    os.makedirs(os.path.join(d, dname))
-                except OSError, e:
-                    if e.errno != errno.EEXIST:
-                        raise
-            file(os.path.join(d, p), "wb").write("")
+        createpaths(d, paths)
         yield d
