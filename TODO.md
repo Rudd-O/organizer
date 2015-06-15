@@ -9,3 +9,5 @@ To do list
   automatically supported).  Of course, the user should be able to override both how the structure
   is formed (using some templating language) and also specific strings that fail to match anything
   in the destination structure.
+* Implement GUI that can be launched from Nautilus or Dolphin (text file already exists)
+  UI must be in GTK+ because a Qt UI would be unbearably slow over the network.
