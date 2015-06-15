@@ -59,7 +59,10 @@ class Nature(object):
 
 class TVShow(Nature):
 
-    seasonre = r"^(.*).S(eason)?[. ]*([0-9]+)\s*E(p(isode)?)?[. ]*([0-9]+)"
+    seasonres = [
+                 r"^(.*).S(eason)?[. ]*([0-9]+)\s*E(p(isode)?)?[. ]*([0-9]+)",
+                 r"^(.*)(.)([0-9]+)x([0-9][0-9]+)",
+    ]
 
     def __init__(self, path):
         Nature.__init__(self, path)
@@ -70,14 +73,18 @@ class TVShow(Nature):
         _, ext = os.path.splitext(path)
         if ext.lower() in MOVIE_EXTS:
             confidence = 0.2
-        season = re.findall(klass.seasonre, os.path.basename(path), re.I)
+        for seasonre in klass.seasonres:
+            season = re.findall(seasonre, os.path.basename(path), re.I)
+            if season: break
         if season:
             confidence += 0.6
         return confidence
 
     def subdir_hints(self):
         base = os.path.basename(self.path)
-        partitioned = re.findall(self.seasonre, base, re.I)
+        for seasonre in self.seasonres:
+            partitioned = re.findall(seasonre, base, re.I)
+            if partitioned: break
         if partitioned:
             firstmatch = partitioned[0]
             showname = firstmatch[0]

@@ -26,6 +26,11 @@ class TestDetectNature(unittest.TestCase):
         assert isinstance(nature, natures.TVShow)
         assert nature.subdir_hints() == ("Greys.Anatomy", "Season 7"), nature.subdir_hints()
         nature = natures.detect_nature(
+            "Doctor.Who.2005.8x03.Robot.Of.Sherwood.720p.HDTV.x264.avi"
+        )
+        assert isinstance(nature, natures.TVShow), nature
+        assert nature.subdir_hints() == ("Doctor.Who.2005", "Season 8"), nature.subdir_hints()
+        nature = natures.detect_nature(
             "Greys.Anatomy.XviD-ENCODED.avi"
         )
         assert not isinstance(nature, natures.TVShow)
