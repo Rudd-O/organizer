@@ -13,17 +13,17 @@ class TestDetectNature(unittest.TestCase):
         nature = natures.detect_nature(
             "Greys.Anatomy.S08E14.HDTV.XviD-ENCODED.avi"
         )
-        assert isinstance(nature, natures.TVShow)
+        assert isinstance(nature, natures.TVShow), nature
         assert nature.subdir_hints() == ("Greys.Anatomy", "Season 8"), nature.subdir_hints()
         nature = natures.detect_nature(
             "Greys.Anatomy.Season 09 Episode 19.HDTV.XviD-ENCODED.avi"
         )
-        assert isinstance(nature, natures.TVShow)
+        assert isinstance(nature, natures.TVShow), nature
         assert nature.subdir_hints() == ("Greys.Anatomy", "Season 9"), nature.subdir_hints()
         nature = natures.detect_nature(
             "Greys.Anatomy.season 7 Ep 15.HDTV.XviD-ENCODED.avi"
         )
-        assert isinstance(nature, natures.TVShow)
+        assert isinstance(nature, natures.TVShow), nature
         assert nature.subdir_hints() == ("Greys.Anatomy", "Season 7"), nature.subdir_hints()
         nature = natures.detect_nature(
             "Doctor.Who.2005.8x03.Robot.Of.Sherwood.720p.HDTV.x264.avi"
@@ -33,7 +33,7 @@ class TestDetectNature(unittest.TestCase):
         nature = natures.detect_nature(
             "Greys.Anatomy.XviD-ENCODED.avi"
         )
-        assert not isinstance(nature, natures.TVShow)
+        assert not isinstance(nature, natures.TVShow), nature
         assert nature.subdir_hints() == (), nature.subdir_hints()
 
     def test_simple_movie(self):
