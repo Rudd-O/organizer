@@ -11,6 +11,7 @@ from organizer import memory
 from organizer import ops
 import os
 import sys
+import traceback
 
 QUIT = "user requested quit"
 
@@ -158,7 +159,7 @@ def mainloop():
         program.mainloop()
     except Exception, e:
         program.display_error("Unexpected exception while running: %s" % e)
-        raise
+        traceback.print_exc()
         return 14
     try:
         memcontents = mem.serialize()
