@@ -15,6 +15,9 @@ class Destination(object):
     def __init__(self, path):
         self.path = path
 
+    def __str__(self):
+        return self.path
+
     def _get_hints(self, subpath):
         """Returns possible subfolders in destination."""
         path = self.path
