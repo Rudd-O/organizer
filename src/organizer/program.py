@@ -34,7 +34,11 @@ class BatchProgram(object):
     def __init__(self, operator, mem, files):
         self.operator = operator
         self.memory = mem
-        self.files = files
+        self.files = dict(
+            (x, y)
+            for x, y in ((os.path.abspath(f), f)
+            for f in files)
+        ).values()
 
     def mainloop(self):
         """Runs the CLI program."""
@@ -130,7 +134,6 @@ class CLIProgram(BatchProgram):
 def mainloop():
     parser = get_parser()
     args = parser.parse_args()
-    files = dict((x, y) for x, y in ((os.path.abspath(f), f) for f in args.files)).values()
     try:
         memcontents = file(os.path.expanduser("~/.organizer"), "rb").read()
         mem = memory.SerializableMemory.deserialize(memcontents)
@@ -149,12 +152,12 @@ def mainloop():
         else:
             operator = ops.CLIOPerator()
     if args.batch:
-        program = BatchProgram(operator, mem, files)
+        program = BatchProgram(operator, mem, args.files)
     else:
         if gui_available:
-            pass  # FIXME            program = GUIProgram(operator, mem, files)
+            pass  # FIXME            program = GUIProgram(operator, mem, args.files)
         else:
-            program = CLIProgram(operator, mem, files)
+            program = CLIProgram(operator, mem, args.files)
     try:
         program.mainloop()
     except Exception, e:

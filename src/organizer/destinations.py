@@ -13,7 +13,7 @@ class Destination(object):
     path = None
 
     def __init__(self, path):
-        self.path = path
+        self.path = os.path.abspath(path)
 
     def __str__(self):
         return self.path
