@@ -12,6 +12,8 @@ from organizer import ops
 import os
 import sys
 
+QUIT = "user requested quit"
+
 def get_parser():
     '''returns argument parser for program'''
     parser = argparse.ArgumentParser(description='Organize files into directories.')
@@ -59,6 +61,7 @@ class CLIProgram(BatchProgram):
             a = assistant.Assistant(self.memory, f)
             self.current_assistant = a
             a.begin()
+            last_prompt = None
             while True:
                 if not a.container_of_final_path:
                     self.display_to_user("The assistant needs more information to organize %s" % f)
@@ -72,16 +75,24 @@ class CLIProgram(BatchProgram):
                         self.display_to_user("  Subdirectories:")
                     for n, subdir in enumerate(a.subdirs, 1):
                         self.display_to_user("           (%s)%s└ %s" % (n, "  "*n, subdir))
-                next_func = self.prompt("Change destination (d) * Change subdir (1-9) * Proceed as-is (leave blank and hit ENTER)")
+                next_func = self.prompt("Change destination (d) * Change subdir (1-9) * Proceed as-is (leave blank and hit ENTER) * Quit cleanly (q)")
                 if not next_func:
                     break
-                next_func()
-            if not a.container_of_final_path:
-                self.display_to_user("Skipping %s: do not know how to organize" % f)
-            else:
-                self.operator.create_directories(a.container_of_final_path)
-                self.operator.move_file(f, a.final_path)
+                last_prompt = next_func()
+                if last_prompt == QUIT:
+                    break
+            if last_prompt != QUIT:
+                if not a.container_of_final_path:
+                    self.display_to_user("Skipping %s: do not know how to organize" % f)
+                else:
+                    self.operator.create_directories(a.container_of_final_path)
+                    self.operator.move_file(f, a.final_path)
             a.persist_in_memory()
+            if last_prompt == QUIT:
+                break
+
+    def quit(self):
+        return QUIT
 
     def change_subdir(self, subdirnum):
         read = raw_input("Type the new subdirectory %s.  A blank input clears the subdirectory.\n>>> " % subdirnum)
@@ -107,6 +118,8 @@ class CLIProgram(BatchProgram):
             return lambda: self.change_subdir(readint)
         elif read == "d":
             return self.change_destination
+        elif read == "q":
+            return self.quit
         elif read == "":
             return None
         else:
