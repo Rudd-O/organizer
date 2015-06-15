@@ -34,6 +34,41 @@ class TestAssistant(unittest.TestCase):
                 a.change_destination(d)
                 assert sb(a.final_path) == guess, (sb(a.final_path), guess)
 
+    def test_assistant_moviefolder_do_it_right(self):
+        nomemory = memory.NoMemory()
+        ps = [
+              (
+                  "Without slash",
+                "Sample",
+                [
+                 "Sample/movie.avi",
+                 ],
+                [
+                 "Existing/super.avi",
+                 ],
+                "Sample",
+                ),
+              (
+                  "With slash",
+                "Sample/",
+                [
+                 "Sample/movie.avi",
+                 ],
+                [
+                 "Existing/super.avi",
+                 ],
+                "Sample",
+                ),
+        ]
+        for tst, src, orgtree, dsttree, endfn in ps:
+            with dirtree(orgtree) as orgd:
+                with dirtree(dsttree) as dstd:
+                    path = os.path.join(orgd, src)
+                    a = assistant.Assistant(nomemory, path)
+                    a.begin()
+                    a.change_destination(dstd)
+                    assert a.final_path == os.path.join(dstd, endfn), (tst, a.final_path, endfn)
+
     def test_assistant_with_memory(self):
         mem = memory.SerializableMemory()
         comprehensive = [

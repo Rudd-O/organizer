@@ -86,6 +86,7 @@ class Assistant(object):
         """Every Assistant requires a memory.Memory object, and a path pointing to
         a file or directory to organize."""
         self.memory = memory
+        path = os.path.abspath(path)
         self._path = path
         self.subdirs = []
 
