@@ -139,7 +139,7 @@ class Assistant(object):
         the guesses that this program made, and the specified subdir, after
         persist_in_memory has been called."""
         subdirs = self.subdirs[:]
-        while len(subdirs) < subdir_number:
+        while len(subdirs) < subdir_number + 1:
             subdirs.append(Subdir(self.memory))
         subdirs[subdir_number].set_user_supplied_datum(new_subdir)
         self.subdirs = subdirs
@@ -148,8 +148,9 @@ class Assistant(object):
     def persist_in_memory(self):
         """Requests the assistant to save its gathered knowledge into
         its memory."""
-        self.memory.remember_destination_for_nature(self.nature.__class__,
-                                                    self.destination.path)
+        if self.destination and self.destination.path:
+            self.memory.remember_destination_for_nature(self.nature.__class__,
+                                                        os.path.abspath(self.destination.path))
         for s in self.subdirs:
             s.persist_in_memory()
 
