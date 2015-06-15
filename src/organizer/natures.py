@@ -57,6 +57,9 @@ class Nature(object):
         zero length."""
         return ()
 
+    def name(self):
+        return self.__class__.__name__
+
 class TVShow(Nature):
 
     seasonres = [
@@ -92,6 +95,9 @@ class TVShow(Nature):
             return (showname, season)
         return (os.path.splitext(base)[0],)
 
+    def name(self):
+        return "TV show"
+
 class Movie(Nature):
 
     def __init__(self, path):
@@ -107,6 +113,9 @@ class Movie(Nature):
 
     def subdir_hints(self):
         return ()
+
+    def name(self):
+        return "Movie file"
 
 class MovieFolder(Nature):
 
@@ -132,6 +141,9 @@ class MovieFolder(Nature):
     def subdir_hints(self):
         return ()
 
+    def name(self):
+        return "Movie folder"
+
 class Album(Nature):
 
     def __init__(self, path):
@@ -150,6 +162,9 @@ class Album(Nature):
                 confidence = confidence + 0.2
         return confidence
 
+    def name(self):
+        return "Music album"
+
 class Compilation(Nature):
 
     def __init__(self, path):
@@ -164,6 +179,9 @@ class Compilation(Nature):
             if va:
                 confidence = confidence + 0.1
         return confidence
+
+    def name(self):
+        return "Music compilation"
 
 class Unknown(Nature):
 
