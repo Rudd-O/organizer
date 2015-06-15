@@ -3,6 +3,7 @@
 '''Variants of memories.'''
 
 import cPickle
+import os
 
 class NoMemory(object):
     """Memory that recalls nothing."""
@@ -14,6 +15,7 @@ class NoMemory(object):
         pass
 
     def remember_destination_for_nature(self, klass, dest):
+        """dest must be an absolute path, or None."""
         pass
 
     def remember_associated_hint(self, hint, substitution):
@@ -33,6 +35,7 @@ class SerializableMemory(object):
         m = klass()
         m.destinations_for_nature = d
         m.associated_hints = a
+        return m
 
     def serialize(self):
         """Serializes the data of the SerializableMemory to a string."""
@@ -45,9 +48,12 @@ class SerializableMemory(object):
         return self.associated_hints.get(hint)
 
     def remember_destination_for_nature(self, klass, dest):
+        """dest must be an absolute path, or None."""
         if dest is None and klass in self.destinations_for_nature:
             del self.destinations_for_nature[klass]
         if dest is not None:
+            if dest != os.path.abspath(dest):
+                raise ValueError("%r is not an absolute path" % dest)
             self.destinations_for_nature[klass] = dest
 
     def remember_associated_hint(self, hint, substitution):
