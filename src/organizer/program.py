@@ -76,7 +76,7 @@ class CLIProgram(BatchProgram):
                     self.display_to_user("Here are our best guesses:")
                 else:
                     self.display_to_user("The assistant has made the following guesses for %s" % f)
-                self.display_to_user("  File nature: %s" % a.nature.name())
+                self.display_to_user("  Nature of file: %s" % a.nature.name())
                 self.display_to_user("  Destination: %s" % a.destination)
                 if a.subdirs:
                     if not a.destination:
