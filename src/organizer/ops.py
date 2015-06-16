@@ -43,6 +43,10 @@ class CLIOPerator(Operator):
         cmd = ["mkdir", "-p", "--", container]
         check_call(cmd)
 
+    def remove_file(self, f):
+        cmd = ["rm", "-rf", "--", f]
+        check_call(cmd)
+
 class CLIReportOperator(Operator):
 
     def move_file(self, original, new):
@@ -53,6 +57,9 @@ class CLIReportOperator(Operator):
 
     def create_directories(self, container):
         print "Would create", container
+
+    def remove_file(self, f):
+        print "Would remove", f
 
 class KIOOperator(Operator):
 
@@ -75,4 +82,8 @@ class KIOOperator(Operator):
 
     def create_directories(self, container):
         cmd = ["mkdir", "-p", "--", container]
+        check_call(cmd)
+
+    def remove_file(self, f):
+        cmd = ["rm", "-rf", "--", f]
         check_call(cmd)

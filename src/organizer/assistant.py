@@ -162,7 +162,7 @@ class Assistant(object):
             return None
         if not self.nature:
             return None
-        p = [self.destination.path] + [ str(s) for s in self.subdirs ] + [os.path.basename(self.nature.path)]
+        p = [self.destination.path] + [ str(s) for s in self.subdirs ] + [os.path.basename(self.nature.path_to_organize)]
         return os.path.join(*p)
 
     @property

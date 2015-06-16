@@ -26,6 +26,9 @@ def get_parser():
                         help='files to organize')
     return parser
 
+def paths_equal(p1, p2):
+    return os.path.abspath(p1) == os.path.abspath(p2)
+
 def detect_gui():
     return False  # FIXME
 
@@ -53,7 +56,9 @@ class BatchProgram(object):
 
     def organize(self, assistant, nature):
         self.operator.create_directories(assistant.container_of_final_path)
-        self.operator.move_file(nature.path, assistant.final_path)
+        self.operator.move_file(nature.path_to_organize, assistant.final_path)
+        if not paths_equal(nature.path_to_organize, nature.path):
+            self.operator.remove_file(nature.path)
 
     def display_to_user(self, msg):
         print >> sys.stdout, msg
@@ -76,7 +81,7 @@ class CLIProgram(BatchProgram):
                     self.display_to_user("Here are our best guesses:")
                 else:
                     self.display_to_user("The assistant has made the following guesses for %s" % f)
-                self.display_to_user("  File to organize: %s" % a.nature.path)
+                self.display_to_user("  File to organize: %s" % a.nature.path_to_organize)
                 self.display_to_user("  Nature of file: %s" % a.nature.name())
                 self.display_to_user("  Destination: %s" % a.destination)
                 if a.subdirs:

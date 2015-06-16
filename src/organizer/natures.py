@@ -60,6 +60,14 @@ class Nature(object):
     def name(self):
         return self.__class__.__name__
 
+    @property
+    def path_to_organize(self):
+        """Returns the actual path to organize.  If this differs from the path
+        associated with this nature, that implicitly means that after
+        organization of the path returned here, the path associated with
+        this nature must be removed."""
+        return self.path
+
 def find_videos_within_folder(folder):
     videos = []
     contained = pathutil.glob(folder, "*")
