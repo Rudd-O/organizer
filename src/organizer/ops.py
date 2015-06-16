@@ -46,13 +46,13 @@ class CLIOPerator(Operator):
 class CLIReportOperator(Operator):
 
     def move_file(self, original, new):
-        print "Would rename", original
-        print "      to", new
+        print "Would   move", original
+        print "          to", new
         if os.path.isdir(new):
-            print "      perhaps replacing existing", new
+            print "   replacing", new
 
     def create_directories(self, container):
-        print "Would create directories", container
+        print "Would create", container
 
 class KIOOperator(Operator):
 
