@@ -57,7 +57,7 @@ class CLIReportOperator(Operator):
     def move_file(self, original, new):
         print "        move", original
         print "          to", new
-        if os.path.isdir(new):
+        if os.path.exists(new):
             print "   replacing", new
 
     def create_directories(self, container):
