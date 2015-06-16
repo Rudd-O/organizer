@@ -88,8 +88,9 @@ class TVShow(Nature):
     def examine(klass, path):
         confidence = 0.0
         _, ext = os.path.splitext(path)
-        if ext.lower() in MOVIE_EXTS:
-            confidence = 0.2
+        if ext.lower() not in MOVIE_EXTS:
+            return confidence
+        confidence += 0.2
         for seasonre in klass.seasonres:
             season = re.findall(seasonre, os.path.basename(path), re.I)
             if season: break
@@ -121,8 +122,9 @@ class Movie(Nature):
     def examine(klass, path):
         confidence = 0.0
         _, ext = os.path.splitext(path)
-        if ext.lower() in MOVIE_EXTS:
-            confidence = 0.5
+        if ext.lower() not in MOVIE_EXTS:
+            return confidence
+        confidence += 0.5
         return confidence
 
     def subdir_hints(self):
