@@ -55,6 +55,7 @@ class BatchProgram(object):
             a.persist_in_memory()
 
     def organize(self, assistant, nature):
+        self.operator.take_ownership(nature.path)
         self.operator.create_directories(assistant.container_of_final_path)
         self.operator.move_file(nature.path_to_organize, assistant.final_path)
         if not paths_equal(nature.path_to_organize, nature.path):
@@ -158,7 +159,7 @@ def mainloop():
         if gui_available:
             operator = ops.KIOOperator()
         else:
-            operator = ops.CLIOPerator()
+            operator = ops.CLIOperator()
     if args.batch:
         program = BatchProgram(operator, mem, args.files)
     else:

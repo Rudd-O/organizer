@@ -32,8 +32,9 @@ class CLIOperatorTest(CapturedCommandTest):
 
     def test_simple_ops(self):
         with self.patch_calls():
-            o = ops.CLIOPerator()
+            o = ops.CLIOperator()
             o.create_directories("/a")
+            o.take_ownership("/b/c/d")
             o.move_file("/b/c/d", "/a")
         self.assertListEqual(self.commands, [
             "mkdir -p -- /a".split(),
@@ -47,6 +48,7 @@ class KIOOperatorTest(CapturedCommandTest):
         with self.patch_calls():
             o = ops.KIOOperator()
             o.create_directories("/a")
+            o.take_ownership("/b/c/d")
             o.move_file("/b/c/d", "/a")
         self.assertListEqual(self.commands, [
             "mkdir -p -- /a".split(),
@@ -58,10 +60,11 @@ class KIOOperatorTest(CapturedCommandTest):
         with testutil.dirtest() as d:
             with self.patch_calls():
                 o = ops.KIOOperator()
+                o.take_ownership("/b/c/d")
                 o.move_file("/b/c/d", d)
             self.assertListEqual(self.commands, [
+                "takeown -r -- /b/c/d".split(),
                 ["kdialog", "--warningyesno", "File /b/c/d will replace %s.  Are you sure?" % d],
                 ("rm -rf -- %s" % d).split(),
-                "takeown -r -- /b/c/d".split(),
                 ("kde-mv -- /b/c/d %s" % d).split(),
             ])

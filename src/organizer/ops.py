@@ -27,15 +27,17 @@ class Operator(object):
         """Realizes the existence of container_path."""
         raise NotImplementedError
 
-class CLIOPerator(Operator):
+class CLIOperator(Operator):
 
     ops_already_performed = None
 
     def __init__(self):
         self.ops_already_performed = []
 
+    def take_ownership(self, f):
+        takeown(f)
+
     def move_file(self, original, new):
-        takeown(original)
         cmd = ["mv", "-iT", "--", original, new]
         check_call(cmd)
 
@@ -49,6 +51,9 @@ class CLIOPerator(Operator):
 
 class CLIReportOperator(Operator):
 
+    def take_ownership(self, f):
+        print "Would  chown", f
+
     def move_file(self, original, new):
         print "        move", original
         print "          to", new
@@ -56,12 +61,12 @@ class CLIReportOperator(Operator):
             print "   replacing", new
 
     def create_directories(self, container):
-        print "Would create", container
+        print "      create", container
 
     def remove_file(self, f):
         print "      remove", f
 
-class KIOOperator(Operator):
+class KIOOperator(CLIOperator):
 
     def move_file(self, original, new):
         if os.path.isdir(new):
@@ -71,19 +76,10 @@ class KIOOperator(Operator):
             if ret != 0:
                 return
             check_call(["rm", "-rf", "--", new])
-        takeown(original)
         cmd = [
                "kde-mv",
                "--",
                original,
                new,
         ]
-        check_call(cmd)
-
-    def create_directories(self, container):
-        cmd = ["mkdir", "-p", "--", container]
-        check_call(cmd)
-
-    def remove_file(self, f):
-        cmd = ["rm", "-rf", "--", f]
         check_call(cmd)
