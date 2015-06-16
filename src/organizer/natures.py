@@ -60,6 +60,20 @@ class Nature(object):
     def name(self):
         return self.__class__.__name__
 
+def find_videos_within_folder(folder):
+    videos = []
+    contained = pathutil.glob(folder, "*")
+    for c in contained:
+        _, ext = os.path.splitext(c)
+        if ext.lower() in MOVIE_EXTS:
+            videos.append(c)
+    return videos
+
+def find_subtitles_within_folder(folder):
+    contained = pathutil.glob(folder, "*.[sS][rR][tT]")
+    contained2 = pathutil.glob(folder, os.path.join("*", "*.[sS][rR][tT]"))
+    return contained + contained2
+
 class TVShow(Nature):
 
     seasonres = [
@@ -125,16 +139,11 @@ class MovieFolder(Nature):
     @classmethod
     def examine(klass, path):
         confidence = 0.0
-        contained = pathutil.glob(path, "*")
-        for c in contained:
-            _, ext = os.path.splitext(c)
-            if ext.lower() in MOVIE_EXTS:
-                confidence = 0.4
-        srts = itertools.chain(
-            glob.iglob(os.path.join(path, "*.srt")),
-            glob.iglob(os.path.join(path, "*", "*.srt")),
-        )
-        if list(srts):
+        videos = find_videos_within_folder(path)
+        if len(videos) not in [1, 2]:
+            return confidence
+        confidence = 0.4
+        if find_subtitles_within_folder(path):
             confidence = confidence + 0.3
         return confidence
 
