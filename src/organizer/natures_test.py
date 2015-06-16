@@ -36,6 +36,12 @@ class TestDetectNature(unittest.TestCase):
         assert not isinstance(nature, natures.TVShow), nature
         assert nature.subdir_hints() == (), nature.subdir_hints()
 
+    def test_is_not_simple_tvshow(self):
+        nature = natures.detect_nature(
+            "Greys.Anatomy.S08E14.HDTV.XviD-ENCODED"
+        )
+        assert not isinstance(nature, natures.TVShow), nature
+
     def test_simple_movie(self):
         nature = natures.detect_nature(
             "99.F.FRENCH.ENCODED.GOOD.avi"
@@ -53,6 +59,22 @@ class TestDetectNature(unittest.TestCase):
             nature = natures.detect_nature(x)
             assert isinstance(nature, natures.Movie)
             assert nature.subdir_hints() == (), nature.subdir_hints()
+
+    def test_simple_tv_show_container(self):
+        p = "Bones X/Bones S08E02.avi"
+        with dirtree([p]) as d:
+            x = os.path.join(d, "Bones X")
+            nature = natures.detect_nature(x)
+            assert nature.__class__ == natures.TVShowContainer, nature
+            assert nature.path_to_organize == os.path.join(d, p), nature.path_to_organize
+
+    def test_simple_tv_show_folder(self):
+        with dirtree(["Bones X/Bones S08E02.avi",
+                      "Bones X/Bones S08E02.en.srt"]) as d:
+            x = os.path.join(d, "Bones X")
+            nature = natures.detect_nature(x)
+            assert nature.__class__ == natures.TVShowFolder, nature
+            assert nature.path_to_organize == x, nature.path_to_organize
 
     def test_simple_album(self):
         p = [

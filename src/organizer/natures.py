@@ -121,6 +121,58 @@ class TVShow(Nature):
     def name(self):
         return "TV show"
 
+class TVShowContainer(TVShow):
+
+    @classmethod
+    def examine(klass, path):
+        confidence = 0.0
+        videos = find_videos_within_folder(path)
+        if len(videos) != 1:
+            return confidence
+        confidence += 0.2
+        for seasonre in klass.seasonres:
+            season = re.findall(seasonre, os.path.basename(videos[0]), re.I)
+            if season: break
+        if season:
+            confidence += 0.4
+        return confidence
+
+    def subdir_hints(self):
+        videos = find_videos_within_folder(self.path)
+        for seasonre in self.seasonres:
+            partitioned = re.findall(seasonre, os.path.basename(videos[0]), re.I)
+            if partitioned: break
+        if partitioned:
+            firstmatch = partitioned[0]
+            showname = firstmatch[0]
+            season = "Season %d" % int(firstmatch[2])
+            return (showname, season)
+        return (os.path.splitext(videos[0])[0],)
+
+    def name(self):
+        return "Folder containing a TV show"
+
+    @property
+    def path_to_organize(self):
+        videos = find_videos_within_folder(self.path)
+        return videos[0]
+
+class TVShowFolder(TVShowContainer):
+
+    @classmethod
+    def examine(klass, path):
+        confidence = TVShowContainer.examine(path)
+        if find_subtitles_within_folder(path):
+            confidence += 0.2
+        return confidence - 0.1
+
+    def name(self):
+        return "TV show folder"
+
+    @property
+    def path_to_organize(self):
+        return self.path
+
 class Movie(Nature):
 
     def __init__(self, path):

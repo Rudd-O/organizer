@@ -69,6 +69,42 @@ class TestAssistant(unittest.TestCase):
                     a.change_destination(dstd)
                     assert a.final_path == os.path.join(dstd, endfn), (tst, a.final_path, endfn)
 
+    def test_assistant_tvfolder(self):
+        nomemory = memory.NoMemory()
+        ps = [
+              (
+                  "TV show with subs",
+                "Sample",
+                [
+                 "Sample/Bones S01E01.avi",
+                 "Sample/Subs/Bones.srt",
+                 ],
+                [
+                 "somedumbfile",
+                 ],
+                "Bones/Season 1/Sample",
+                ),
+              (
+                  "TV show forlorn in a folder",
+                "Sample",
+                [
+                 "Sample/Bones S01E01.avi",
+                 ],
+                [
+                 "somedumbfile",
+                 ],
+                "Bones/Season 1/Bones S01E01.avi",
+                ),
+        ]
+        for tst, src, orgtree, dsttree, endfn in ps:
+            with dirtree(orgtree) as orgd:
+                with dirtree(dsttree) as dstd:
+                    path = os.path.join(orgd, src)
+                    a = assistant.Assistant(nomemory, path)
+                    a.begin()
+                    a.change_destination(dstd)
+                    assert a.final_path == os.path.join(dstd, endfn), (tst, a.final_path, os.path.join(dstd, endfn))
+
     def test_assistant_with_memory(self):
         mem = memory.SerializableMemory()
         comprehensive = [
