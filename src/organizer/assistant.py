@@ -160,7 +160,9 @@ class Assistant(object):
         """This is the final full path name for the organizee."""
         if not self.destination:
             return None
-        p = [self.destination.path] + [ str(s) for s in self.subdirs ] + [os.path.basename(self._path)]
+        if not self.nature:
+            return None
+        p = [self.destination.path] + [ str(s) for s in self.subdirs ] + [os.path.basename(self.nature.path)]
         return os.path.join(*p)
 
     @property
