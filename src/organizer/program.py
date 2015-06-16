@@ -48,9 +48,12 @@ class BatchProgram(object):
             if not a.container_of_final_path_exists:
                 self.display_to_user("Skipping %s: its destination directory is nonexistent or not known" % f)
                 continue
-            self.operator.create_directories(a.container_of_final_path)
-            self.operator.move_file(f, a.final_path)
+            self.organize(a, a.nature)
             a.persist_in_memory()
+
+    def organize(self, assistant, nature):
+        self.operator.create_directories(assistant.container_of_final_path)
+        self.operator.move_file(nature.path, assistant.final_path)
 
     def display_to_user(self, msg):
         print >> sys.stdout, msg
@@ -90,8 +93,7 @@ class CLIProgram(BatchProgram):
                 if not a.container_of_final_path:
                     self.display_to_user("Skipping %s: do not know how to organize" % f)
                 else:
-                    self.operator.create_directories(a.container_of_final_path)
-                    self.operator.move_file(f, a.final_path)
+                    self.organize(a, a.nature)
             a.persist_in_memory()
             if last_prompt == QUIT:
                 break
