@@ -55,6 +55,9 @@ class BatchProgram(object):
             a.persist_in_memory()
 
     def organize(self, assistant, nature):
+        if paths_equal(nature.path_to_organize, assistant.final_path):
+            self.display_to_user("Skipping %s: it appears to be already organized" % nature.path_to_organize)
+            return
         self.operator.take_ownership(nature.path)
         self.operator.create_directories(assistant.container_of_final_path)
         self.operator.move_file(nature.path_to_organize, assistant.final_path)

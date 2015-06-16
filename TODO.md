@@ -1,6 +1,10 @@
 To do list
 ==========
 
+* Write program tests.  At least for the batch program.
+* Write a program test that certifies the program is safe to run even when the final
+   formulated path points to the original file or directory.  This protects against data
+   loss from organizing an already-organized path.
 * Implement litmus unit test that uses my archive data to see if would archive files the way I would.
 * Implement configurable subdir hints for the different natures.  The hints system kind of sucks.
   Ideally, I would like the nature to tell me what bits of information are available in a key value
