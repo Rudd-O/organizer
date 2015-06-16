@@ -123,6 +123,15 @@ class TVShow(Nature):
 
 class TVShowContainer(TVShow):
 
+    def __init__(self, path):
+        TVShow.__init__(self, path)
+        # Must save this datum now, else path_to_organize() will bomb
+        # once video is deleted.
+        # This cannot fail because of the invariant that examine() is always
+        # called once with the same argument before __init__() is.
+        videos = find_videos_within_folder(self.path)
+        self._path_to_organize = videos[0]
+
     @classmethod
     def examine(klass, path):
         confidence = 0.0
@@ -138,9 +147,8 @@ class TVShowContainer(TVShow):
         return confidence
 
     def subdir_hints(self):
-        videos = find_videos_within_folder(self.path)
         for seasonre in self.seasonres:
-            partitioned = re.findall(seasonre, os.path.basename(videos[0]), re.I)
+            partitioned = re.findall(seasonre, os.path.basename(self._path_to_organize), re.I)
             if partitioned: break
         if partitioned:
             firstmatch = partitioned[0]
@@ -154,8 +162,7 @@ class TVShowContainer(TVShow):
 
     @property
     def path_to_organize(self):
-        videos = find_videos_within_folder(self.path)
-        return videos[0]
+        return self._path_to_organize
 
 class TVShowFolder(TVShowContainer):
 
