@@ -4,10 +4,10 @@
 
 This code detects the nature of a file path.'''
 
-import glob
 import itertools
 import re
 import os.path
+import pathutil
 
 MOVIE_EXTS = [".avi", ".mkv", ".mov", ".mp4"]
 MUSIC_EXTS = [".ogg", ".flac", ".mp3", ".aac", ".m4a"]
@@ -125,7 +125,7 @@ class MovieFolder(Nature):
     @classmethod
     def examine(klass, path):
         confidence = 0.0
-        contained = glob.iglob(os.path.join(path, "*"))
+        contained = pathutil.glob(path, "*")
         for c in contained:
             _, ext = os.path.splitext(c)
             if ext.lower() in MOVIE_EXTS:
@@ -153,8 +153,8 @@ class Album(Nature):
     def examine(klass, path):
         confidence = 0.0
         contained = itertools.chain(
-            glob.iglob(os.path.join(path, "*")),
-            glob.iglob(os.path.join(path, "*", "*")),
+            pathutil.glob(path, "*"),
+            pathutil.glob(path, os.path.join("*", "*")),
         )
         for c in contained:
             _, ext = os.path.splitext(c)

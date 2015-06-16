@@ -4,7 +4,7 @@
 
 This code handles possible destinations.'''
 
-import glob
+import pathutil
 import difflib
 import os.path
 
@@ -23,7 +23,7 @@ class Destination(object):
         path = self.path
         if subpath:
             path = os.path.join(path, subpath)
-        contents = glob.glob(os.path.join(path, "*"))
+        contents = pathutil.glob(path, "*")
         contents = [ os.path.basename(p) for p in contents if os.path.isdir(p) ]
         return contents
 
