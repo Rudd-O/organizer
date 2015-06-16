@@ -50,7 +50,7 @@ class CLIOPerator(Operator):
 class CLIReportOperator(Operator):
 
     def move_file(self, original, new):
-        print "Would   move", original
+        print "        move", original
         print "          to", new
         if os.path.isdir(new):
             print "   replacing", new
@@ -59,7 +59,7 @@ class CLIReportOperator(Operator):
         print "Would create", container
 
     def remove_file(self, f):
-        print "Would remove", f
+        print "      remove", f
 
 class KIOOperator(Operator):
 
