@@ -10,31 +10,42 @@ from organizer.testutil import dirtree
 class TestDetectNature(unittest.TestCase):
 
     def test_simple_tvshow(self):
+        resolvedpath = lambda x: "/".join(e[1] for e in x)
+
         nature = natures.detect_nature(
             "Greys.Anatomy.S08E14.HDTV.XviD-ENCODED.avi"
         )
         assert isinstance(nature, natures.TVShow), nature
-        assert nature.subdir_hints() == ("Greys.Anatomy", "Season 8"), nature.subdir_hints()
+        resolved = nature.resolve()
+        assert resolvedpath(resolved) == "Greys.Anatomy/Season 8/Greys.Anatomy.S08E14.HDTV.XviD-ENCODED.avi", resolved
+
         nature = natures.detect_nature(
             "Greys.Anatomy.Season 09 Episode 19.HDTV.XviD-ENCODED.avi"
         )
         assert isinstance(nature, natures.TVShow), nature
-        assert nature.subdir_hints() == ("Greys.Anatomy", "Season 9"), nature.subdir_hints()
+        resolved = nature.resolve()
+        assert resolvedpath(resolved) == "Greys.Anatomy/Season 9/Greys.Anatomy.Season 09 Episode 19.HDTV.XviD-ENCODED.avi", resolved
+
         nature = natures.detect_nature(
             "Greys.Anatomy.season 7 Ep 15.HDTV.XviD-ENCODED.avi"
         )
         assert isinstance(nature, natures.TVShow), nature
-        assert nature.subdir_hints() == ("Greys.Anatomy", "Season 7"), nature.subdir_hints()
+        resolved = nature.resolve()
+        assert resolvedpath(resolved) == "Greys.Anatomy/Season 7/Greys.Anatomy.season 7 Ep 15.HDTV.XviD-ENCODED.avi", resolved
+
         nature = natures.detect_nature(
             "Doctor.Who.2005.8x03.Robot.Of.Sherwood.720p.HDTV.x264.avi"
         )
         assert isinstance(nature, natures.TVShow), nature
-        assert nature.subdir_hints() == ("Doctor.Who.2005", "Season 8"), nature.subdir_hints()
+        resolved = nature.resolve()
+        assert resolvedpath(resolved) == "Doctor.Who.2005/Season 8/Doctor.Who.2005.8x03.Robot.Of.Sherwood.720p.HDTV.x264.avi", resolved
+
         nature = natures.detect_nature(
             "Greys.Anatomy.XviD-ENCODED.avi"
         )
         assert not isinstance(nature, natures.TVShow), nature
-        assert nature.subdir_hints() == (), nature.subdir_hints()
+        resolved = nature.resolve()
+        assert resolvedpath(resolved) == "Greys.Anatomy.XviD-ENCODED.avi", resolved
 
     def test_is_not_simple_tvshow(self):
         nature = natures.detect_nature(
@@ -47,18 +58,23 @@ class TestDetectNature(unittest.TestCase):
             "99.F.FRENCH.ENCODED.GOOD.avi"
         )
         assert isinstance(nature, natures.Movie)
-        assert nature.subdir_hints() == (), nature.subdir_hints()
+        resolved = nature.resolve()
+        assert resolved == ((True, "99.F.FRENCH.ENCODED.GOOD.avi"),), resolved
 
     def test_simple_movie_folder(self):
         p = "99.F.FRENCH.ENCODED.GOOD/99.F.FRENCH.ENCODED.GOOD.avi"
         with dirtree([p]) as d:
             x = os.path.join(d, p)
+
             nature = natures.detect_nature(os.path.dirname(x))
             assert isinstance(nature, natures.MovieFolder), nature
-            assert nature.subdir_hints() == (), nature.subdir_hints()
+            resolved = nature.resolve()
+            assert resolved == ((True, "99.F.FRENCH.ENCODED.GOOD"),), resolved
+
             nature = natures.detect_nature(x)
             assert isinstance(nature, natures.Movie)
-            assert nature.subdir_hints() == (), nature.subdir_hints()
+            resolved = nature.resolve()
+            assert resolved == ((True, "99.F.FRENCH.ENCODED.GOOD.avi"),), resolved
 
     def test_simple_tv_show_container(self):
         p = "Bones X/Bones S08E02.avi"

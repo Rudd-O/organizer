@@ -6,6 +6,7 @@ This code receives file paths and suggests how to organize them.'''
 
 import os.path
 from organizer import destinations
+from organizer import pathutil
 from organizer import natures
 
 class Subdir(object):
@@ -24,12 +25,15 @@ class Subdir(object):
         self.memory = memory
 
     def set_nature_hint(self, h):
+        h = pathutil.ensure_non_unicode(h)
         self.nature_hint = h
 
     def set_destination_hint(self, h):
+        h = pathutil.ensure_non_unicode(h)
         self.destination_hint = h
 
     def set_user_supplied_datum(self, h):
+        h = pathutil.ensure_non_unicode(h)
         self.user_supplied_datum = h
 
     def persist_in_memory(self):
@@ -113,7 +117,9 @@ class Assistant(object):
         subdirs = self.subdirs[:]
         p = None
         if self.nature:
-            naturehints = self.nature.subdir_hints()
+            naturehints = self.nature.resolve()
+            mandatories = [x for x, _ in naturehints]
+            naturehints = [y for _, y in naturehints]
         else:
             naturehints = []
         r = max((len(subdirs), len(naturehints)))
@@ -128,8 +134,11 @@ class Assistant(object):
             else:
                 subdir.set_nature_hint(None)
             if self.destination:
-                destguess = self.destination.guess_best_hint(str(subdir), p)
-                subdir.set_destination_hint(destguess)
+                if mandatories[n]:
+                    subdir.set_destination_hint(None)
+                else:
+                    destguess = self.destination.guess_best_hint(str(subdir), p)
+                    subdir.set_destination_hint(destguess)
             p = str(subdir) if p is None else os.path.join(p, str(subdir))
         self.subdirs = subdirs
 
@@ -162,7 +171,7 @@ class Assistant(object):
             return None
         if not self.nature:
             return None
-        p = [self.destination.path] + [ str(s) for s in self.subdirs ] + [os.path.basename(self.nature.path_to_organize)]
+        p = [self.destination.path] + [ str(s) for s in self.subdirs ]
         return os.path.join(*p)
 
     @property

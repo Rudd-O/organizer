@@ -5,12 +5,37 @@
 This code detects the nature of a file path.'''
 
 import itertools
+import jinja2
 import re
 import os.path
 import pathutil
 
+SEP = "/"
 MOVIE_EXTS = [".avi", ".mkv", ".mov", ".mp4"]
 MUSIC_EXTS = [".ogg", ".flac", ".mp3", ".aac", ".m4a"]
+
+class Scheme(object):
+    """A scheme indicates to the organizer how to generate a fragment
+    of the path for the final destination of an organizee."""
+
+    def __init__(self, jinjatemplatetext):
+        self.t = jinjatemplatetext
+
+class ExactScheme(Scheme):
+    """The ExactScheme indicates to the organizer algorithm that it must
+    not attempt to second-guess the component of the path, by looking
+    into the destination directory."""
+
+    def allow_speculation(self):
+        return False
+
+class BestGuessScheme(Scheme):
+    """The BestGuessScheme indicates to the organizer algorithm that it may
+    attempt to second-guess the component of the path, by looking
+    into the destination directory."""
+
+    def allow_speculation(self):
+        return True
 
 def _all_natures():
     for klass in globals().values():
@@ -51,12 +76,6 @@ class Nature(object):
         process, between 0.0 and 1.0."""
         raise NotImplementedError
 
-    def subdir_hints(self):
-        """Returns an iterable (name hint, subhint) that hints to the
-        classifier how to construct a classification.  The iterable may be
-        zero length."""
-        return ()
-
     def name(self):
         return self.__class__.__name__
 
@@ -67,6 +86,36 @@ class Nature(object):
         organization of the path returned here, the path associated with
         this nature must be removed."""
         return self.path
+
+    @property
+    def default_schemes(self):
+        """Returns a list of default schemes (overridable by configuration)
+        that indicates to the organizer how to organize this organizee.
+        The variables in the scheme are enclosed by {{ }} in jinja2 fashion,
+        refer to properties returned by the nature, and indicate a path
+        fragment to be appended to the base destination directory that
+        the user has selected for this nature."""
+        return ExactScheme("{{ filename }}"),
+
+    def properties(self):
+        return {"filename": os.path.basename(self.path_to_organize)}
+
+    def resolve(self, schemes=None):
+        """This function takes a Nature instance, then uses the instance's
+        properties() method to resolve any template variables in each
+        one of the Schemes returned by the default scheme, or whatever
+        scheme is specified.  The return is an iterable of (exact, resolved)
+        tuples, where exact is a boolean indicating (if True) whether the
+        resolved value is not to be second-guessed, and resolved is a value
+        that may or may not be second-guessed."""
+        if schemes is None:
+            schemes = self.default_schemes
+        resolveds = []
+        for scheme in schemes:
+            mandatory = scheme.__class__ == ExactScheme
+            resolved = jinja2.Template(scheme.t).render(self.properties())
+            resolveds.append((mandatory, resolved))
+        return tuple(resolveds)
 
 def find_videos_within_folder(folder):
     videos = []
@@ -106,17 +155,24 @@ class TVShow(Nature):
             confidence += 0.6
         return confidence
 
-    def subdir_hints(self):
+    @property
+    def default_schemes(self):
+        return (
+                BestGuessScheme("{{ showname }}"),
+                ExactScheme("Season {{ season }}"),
+                ExactScheme("{{ filename }}"),
+        )
+
+    def properties(self):
+        baseprops = Nature.properties(self)
         base = os.path.basename(self.path)
         for seasonre in self.seasonres:
             partitioned = re.findall(seasonre, base, re.I)
             if partitioned: break
         if partitioned:
-            firstmatch = partitioned[0]
-            showname = firstmatch[0]
-            season = "Season %d" % int(firstmatch[2])
-            return (showname, season)
-        return (os.path.splitext(base)[0],)
+            baseprops["showname"] = partitioned[0][0]
+            baseprops ["season"] = "%d" % int(partitioned[0][2])
+        return baseprops
 
     def name(self):
         return "TV show"
@@ -146,16 +202,16 @@ class TVShowContainer(TVShow):
             confidence += 0.4
         return confidence
 
-    def subdir_hints(self):
+    def properties(self):
+        baseprops = Nature.properties(self)
+        base = os.path.basename(self._path_to_organize)
         for seasonre in self.seasonres:
-            partitioned = re.findall(seasonre, os.path.basename(self._path_to_organize), re.I)
+            partitioned = re.findall(seasonre, base, re.I)
             if partitioned: break
         if partitioned:
-            firstmatch = partitioned[0]
-            showname = firstmatch[0]
-            season = "Season %d" % int(firstmatch[2])
-            return (showname, season)
-        return (os.path.splitext(videos[0])[0],)
+            baseprops["showname"] = partitioned[0][0]
+            baseprops ["season"] = "%d" % int(partitioned[0][2])
+        return baseprops
 
     def name(self):
         return "Folder containing a TV show"
@@ -194,9 +250,6 @@ class Movie(Nature):
         confidence += 0.5
         return confidence
 
-    def subdir_hints(self):
-        return ()
-
     def name(self):
         return "Movie file"
 
@@ -215,9 +268,6 @@ class MovieFolder(Nature):
         if find_subtitles_within_folder(path):
             confidence = confidence + 0.3
         return confidence
-
-    def subdir_hints(self):
-        return ()
 
     def name(self):
         return "Movie folder"

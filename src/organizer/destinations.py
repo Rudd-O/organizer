@@ -4,8 +4,8 @@
 
 This code handles possible destinations.'''
 
-import pathutil
 import difflib
+from organizer import pathutil
 import os.path
 
 class Destination(object):
@@ -13,7 +13,7 @@ class Destination(object):
     path = None
 
     def __init__(self, path):
-        self.path = os.path.abspath(path)
+        self.path = os.path.abspath(pathutil.ensure_non_unicode(path))
 
     def __str__(self):
         return self.path

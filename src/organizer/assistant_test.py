@@ -103,7 +103,7 @@ class TestAssistant(unittest.TestCase):
                     a = assistant.Assistant(nomemory, path)
                     a.begin()
                     a.change_destination(dstd)
-                    assert a.final_path == os.path.join(dstd, endfn), (tst, a.final_path, os.path.join(dstd, endfn))
+                    assert a.final_path == os.path.join(dstd, endfn), (tst, a.final_path[len(dstd) + 1:], endfn, a.nature)
 
     def test_assistant_with_memory(self):
         mem = memory.SerializableMemory()
@@ -160,3 +160,16 @@ class TestAssistant(unittest.TestCase):
                 assert mem.associated_hints == assochints, (tname, mem.associated_hints)
                 if sb(a.final_path):
                     createpaths(d, [sb(a.final_path)])
+
+    def test_assistant_tricky_problem(self):
+        mem = memory.SerializableMemory()
+        with dirtree(["source/Private.Practice.S06E18.avi"]) as orgd:
+            with dirtree(["TV/Private practice/Season 5/Blah.avi"]) as dstd:
+                sb = lambda p: p[len(dstd) + 1:] if p is not None else None
+                path_to_classify = os.path.join(orgd, "source/Private.Practice.S06E18.avi")
+                a = assistant.Assistant(mem, path_to_classify)
+                a.begin()
+                a.change_destination(os.path.join(dstd, 'TV'))
+                self.assertEqual(a.nature.__class__, natures.TVShow)
+                self.assertEqual(sb(a.final_path),
+                                 "TV/Private practice/Season 6/Private.Practice.S06E18.avi")
