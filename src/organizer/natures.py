@@ -113,7 +113,12 @@ class Nature(object):
         resolveds = []
         for scheme in schemes:
             mandatory = scheme.__class__ == ExactScheme
-            resolved = jinja2.Template(scheme.t).render(self.properties())
+            props = dict()
+            for k, v in self.properties().items():
+                if type(v) != unicode:
+                    v = v.decode("utf-8")
+                props[k] = v
+            resolved = jinja2.Template(scheme.t).render(props)
             resolveds.append((mandatory, resolved))
         return tuple(resolveds)
 
