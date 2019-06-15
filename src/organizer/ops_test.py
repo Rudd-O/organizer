@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 
 """Operators tests."""
 
 import contextlib
 from organizer import ops
-import testutil
+from . import testutil
 import unittest
 
 class CapturedCommandTest(unittest.TestCase):

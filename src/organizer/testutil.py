@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 
 '''Test utilities.'''
 
@@ -22,10 +22,11 @@ def createpaths(d, paths):
         if dname:
             try:
                 os.makedirs(os.path.join(d, dname))
-            except OSError, e:
+            except OSError as e:
                 if e.errno != errno.EEXIST:
                     raise
-        file(os.path.join(d, p), "wb").write("")
+        with open(os.path.join(d, p), "wb") as f:
+            f.write(b"")
 
 @decorator.contextmanager
 def dirtree(paths):

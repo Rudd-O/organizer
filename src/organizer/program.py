@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 '''
@@ -37,11 +37,11 @@ class BatchProgram(object):
     def __init__(self, operator, mem, files):
         self.operator = operator
         self.memory = mem
-        self.files = dict(
+        self.files = list(dict(
             (x, y)
             for x, y in ((os.path.abspath(f), f)
             for f in files)
-        ).values()
+        ).values())
 
     def mainloop(self):
         """Runs the CLI program."""
@@ -65,10 +65,10 @@ class BatchProgram(object):
             self.operator.remove_file(nature.path)
 
     def display_to_user(self, msg):
-        print >> sys.stdout, msg
+        print(msg, file=sys.stdout)
 
     def display_error(self, msg):
-        print >> sys.stderr, msg
+        print(msg, file=sys.stderr)
 
 class CLIProgram(BatchProgram):
 
@@ -112,19 +112,19 @@ class CLIProgram(BatchProgram):
         return QUIT
 
     def change_subdir(self, subdirnum):
-        read = raw_input("Type the new subdirectory %s.  A blank input clears the subdirectory.\n>>> " % subdirnum)
+        read = input("Type the new subdirectory %s.  A blank input clears the subdirectory.\n>>> " % subdirnum)
         if not read:
             read = None
         self.current_assistant.change_subdir(subdirnum - 1, read)
 
     def change_destination(self):
-        read = raw_input("Type the new destination path for files of this nature.  A blank input clears the destination.\n>>> ")
+        read = input("Type the new destination path for files of this nature.  A blank input clears the destination.\n>>> ")
         if not read:
             read = None
         self.current_assistant.change_destination(read)
 
     def prompt(self, prompt):
-        read = raw_input("%s\n>>> " % prompt)
+        read = input("%s\n>>> " % prompt)
         read = read.strip()
         try:
             readint = int(read)
@@ -147,7 +147,7 @@ def mainloop():
     parser = get_parser()
     args = parser.parse_args()
     try:
-        memcontents = file(os.path.expanduser("~/.organizer"), "rb").read()
+        memcontents = open(os.path.expanduser("~/.organizer"), "rb").read()
         mem = memory.SerializableMemory.deserialize(memcontents)
     except Exception:
         mem = memory.SerializableMemory()
@@ -172,14 +172,14 @@ def mainloop():
             program = CLIProgram(operator, mem, args.files)
     try:
         program.mainloop()
-    except Exception, e:
+    except Exception as e:
         program.display_error("Unexpected exception while running: %s" % e)
         traceback.print_exc()
         return 14
     try:
         memcontents = mem.serialize()
-        file(os.path.expanduser("~/.organizer"), "wb").write(memcontents)
-    except Exception, e:
+        open(os.path.expanduser("~/.organizer"), "wb").write(memcontents)
+    except Exception as e:
         program.display_error("Cannot save memory: %s" % e)
         return 18
     return 0

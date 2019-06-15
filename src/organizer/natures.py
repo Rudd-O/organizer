@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 
 '''Natures detector.
 
@@ -8,7 +8,7 @@ import itertools
 import jinja2
 import re
 import os.path
-import pathutil
+from . import pathutil
 
 SEP = "/"
 MOVIE_EXTS = [".avi", ".mkv", ".mov", ".mp4"]
@@ -38,7 +38,7 @@ class BestGuessScheme(Scheme):
         return True
 
 def _all_natures():
-    for klass in globals().values():
+    for klass in list(globals().values()):
         if klass == Nature:
             continue
         try:
@@ -56,7 +56,7 @@ def detect_nature(path):
     for klass in _all_natures():
         confidence = klass.examine(path)
         couldbe.append((confidence, klass))
-    itis = list(sorted(couldbe))[-1]
+    itis = list(sorted(couldbe, key=lambda m: m[0]))[-1]
     return itis[1](path)
 
 class Nature(object):
@@ -114,8 +114,8 @@ class Nature(object):
         for scheme in schemes:
             mandatory = scheme.__class__ == ExactScheme
             props = dict()
-            for k, v in self.properties().items():
-                if type(v) != unicode:
+            for k, v in list(self.properties().items()):
+                if type(v) != str:
                     v = v.decode("utf-8")
                 props[k] = v
             resolved = jinja2.Template(scheme.t).render(props)

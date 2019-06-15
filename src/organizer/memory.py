@@ -1,8 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 
 '''Variants of memories.'''
 
-import cPickle
+import pickle
 import os
 
 class NoMemory(object):
@@ -31,7 +31,7 @@ class SerializableMemory(object):
     @classmethod
     def deserialize(klass, pickle):
         """Constructs a new SerializableMemory out of a pickle with data."""
-        d, a = cPickle.loads(pickle)
+        d, a = pickle.loads(pickle)
         m = klass()
         m.destinations_for_nature = d
         m.associated_hints = a
@@ -39,7 +39,7 @@ class SerializableMemory(object):
 
     def serialize(self):
         """Serializes the data of the SerializableMemory to a string."""
-        return cPickle.dumps((self.destinations_for_nature, self.associated_hints))
+        return pickle.dumps((self.destinations_for_nature, self.associated_hints))
 
     def recall_destination_for_nature(self, klass):
         return self.destinations_for_nature.get(klass)

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 
 """Operators.  There are operators suitable for command lines and operators
 suitable for GUI usage."""
@@ -52,19 +52,19 @@ class CLIOperator(Operator):
 class CLIReportOperator(Operator):
 
     def take_ownership(self, f):
-        print "Would  chown", f
+        print("Would  chown", f)
 
     def move_file(self, original, new):
-        print "        move", original
-        print "          to", new
+        print("        move", original)
+        print("          to", new)
         if os.path.exists(new):
-            print "   replacing", new
+            print("   replacing", new)
 
     def create_directories(self, container):
-        print "      create", container
+        print("      create", container)
 
     def remove_file(self, f):
-        print "      remove", f
+        print("      remove", f)
 
 class KIOOperator(CLIOperator):
 
