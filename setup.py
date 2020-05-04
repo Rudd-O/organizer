@@ -42,6 +42,7 @@ setup(
 					]),
 	classifiers = classifiers,
 	packages = ["organizer"],
+	install_requires = ['decorator'],
 	data_files = [
 		("/usr/share/applications", ["organizer.desktop"]),
 	],
