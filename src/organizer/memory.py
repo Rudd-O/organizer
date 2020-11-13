@@ -29,9 +29,9 @@ class SerializableMemory(object):
         self.associated_hints = dict()
 
     @classmethod
-    def deserialize(klass, pickle):
+    def deserialize(klass, pickled):
         """Constructs a new SerializableMemory out of a pickle with data."""
-        d, a = pickle.loads(pickle)
+        d, a = pickle.loads(pickled, encoding="bytes")
         m = klass()
         m.destinations_for_nature = d
         m.associated_hints = a
