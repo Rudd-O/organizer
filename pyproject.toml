@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+dynamic = ["version", "readme"]
+name = "organizer"
+dependencies = [
+    "iniparse", "jinja2", "decorator"
+]
+authors = [
+    {name = "Manuel Amador (Rudd-O)", email = "rudd-o@rudd-o.com"}
+]
+description = "A tool to assist in organizing media files."
+keywords = ["media", "archiving", "organizer"]
+classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'Environment :: Console',
+    'Environment :: No Input/Output (Daemon)',
+    'Intended Audience :: End Users/Desktop',
+    'Intended Audience :: System Administrators',
+    'License :: OSI Approved :: GNU General Public License (GPL)',
+    'Operating System :: POSIX :: Linux',
+    'Programming Language :: Python :: 3 :: Only',
+    'Programming Language :: Python :: 3.5',
+    'Topic :: Communications :: File Sharing',
+    'Topic :: Utilities',
+]
+
+[project.urls]
+Homepage = "https://github.com/Rudd-O/organizer"
+Repository = "https://github.com/Rudd-O/organizer"
+Issues = "https://github.com/Rudd-O/organizer/issues"
+
+[project.scripts]
+organizer = "organizer.program:mainloop"
+
+[tool.setuptools.dynamic]
+version = {attr = "organizer.__version__"}
+readme = {file = "README.md"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+organizer = ["src/organizer/*.desktop"]
