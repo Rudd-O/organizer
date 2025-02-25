@@ -43,7 +43,7 @@ and conveniently.}
 %pyproject_install
 
 mkdir -p %{buildroot}%{_datadir}/applications
-desktop-file-install --dir=%{buildroot}%{_datadir}/applications src/%{_name}/%{_name}.desktop
+desktop-file-install --dir=%{buildroot}%{_datadir}/applications src/%{_name}/applications/%{_name}.desktop
 
 %pyproject_save_files %{_name}
 echo %{_bindir}/%{_name} >> %{pyproject_files}
