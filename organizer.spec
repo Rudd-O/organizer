@@ -9,7 +9,7 @@
 Name:           %{_name}
 Version:        0.0.14
 Release:        %{mybuildnumber}%{?dist}
-Summary:        Manage your todo.txt task list using the Getting Things Done system.
+Summary:        A tool to assist in organizing media files
 
 License:        GPLv3+
 URL:            https://github.com/Rudd-O/%{_name}
@@ -23,8 +23,8 @@ BuildRequires:  coreutils
 Requires:       python3-iniparse python3-jinja2 kdialog kde-runtime python3-decorator
 
 %global _description %{expand:
-Simple GTD lets you manage your to-do list using the
-Getting Things Done system.}
+The organizer will help you sort your media files in folders easily
+and conveniently.}
 
 %description %_description
 
