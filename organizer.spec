@@ -20,7 +20,7 @@ BuildRequires:  python3-devel python3-setuptools
 BuildRequires:  desktop-file-utils
 BuildRequires:  coreutils
 
-Requires:       python3-iniparse python3-jinja2 kdialog kde-runtime python3-decorator
+Requires:       python3-iniparse python3-jinja2 kdialog python3-decorator
 
 %global _description %{expand:
 The organizer will help you sort your media files in folders easily
