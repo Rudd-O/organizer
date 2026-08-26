@@ -7,7 +7,7 @@
 %define mybuildnumber %{?build_number}%{?!build_number:1}
 
 Name:           %{_name}
-Version:        0.0.14
+Version:        0.0.15
 Release:        %{mybuildnumber}%{?dist}
 Summary:        A tool to assist in organizing media files
 
